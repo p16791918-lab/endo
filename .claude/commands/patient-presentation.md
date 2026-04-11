@@ -2,119 +2,91 @@ You are assisting a Korean medical student (intern) who needs to prepare a virtu
 
 The department or disease to present is: **$ARGUMENTS**
 
-Generate a complete case presentation with two parts:
+Your job is to:
+1. Design a realistic virtual patient case for **$ARGUMENTS**
+2. Write a Python script using `python-pptx` to generate an actual `.pptx` PowerPoint file
+3. Execute the script using the Bash tool to create the file
+4. Output the Korean presentation script as text
 
 ---
 
-# PART 1: PRESENTATION SLIDES (in English)
+## STEP 1: Design the Case
 
-Create 12 slides following the Korean intern case presentation format. Each slide should contain only essential keywords, values, and bullet points (not full sentences). Use standard medical abbreviations where appropriate.
-
-Format each slide as:
-
-## Slide [N]: [Title]
-[Content — bullet points, tables, or key values only]
-
----
-
-### Required slides:
-
-**Slide 1: Title**
-- Case title (e.g., "A Case of [Disease]")
-- Department
-- Presenter: Medical Student, [Department] Rotation
-
-**Slide 2: Patient Information**
-- Age, sex
-- Chief Complaint (CC)
-- Date of admission / visit
-
-**Slide 3: History of Present Illness (HPI)**
-- Timeline of symptoms
-- Key characteristics (onset, location, duration, character, aggravating/relieving factors, radiation, severity)
-- Associated symptoms
-
-**Slide 4: Past Medical History / Family History / Social History (PMH/FH/SH)**
-- PMH: prior diagnoses, surgeries, hospitalizations, medications, allergies
-- FH: relevant family diseases
-- SH: smoking (pack-years), alcohol (drinks/week), occupation, living situation
-
-**Slide 5: Review of Systems (ROS)**
-- Positive and negative findings by system (Constitutional, HEENT, Cardio, Pulmonary, GI, GU, MSK, Neuro, Skin)
-
-**Slide 6: Physical Examination**
-- Vital signs: BP, HR, RR, Temp, SpO2
-- General appearance
-- Systematic exam findings (HEENT, Neck, Chest/Lungs, Heart, Abdomen, Extremities, Neuro)
-- Highlight pertinent positives and negatives
-
-**Slide 7: Laboratory & Imaging Results**
-- CBC with differential (key abnormal values highlighted)
-- BMP/CMP
-- Relevant additional labs (cultures, ABG, LFTs, coagulation, etc.)
-- Imaging: CXR, CT, US, MRI — describe key findings
-- Present in table format where possible
-
-**Slide 8: Problem List & Assessment**
-- Numbered problem list
-- Assessment statement: "[Age] [sex] with [key risk factors] presenting with [CC], consistent with [working diagnosis]"
-
-**Slide 9: Differential Diagnosis**
-- Table format: Diagnosis | Supporting Evidence | Against
-- List 3–5 differentials in order of likelihood
-
-**Slide 10: Final Diagnosis**
-- Confirmed diagnosis with diagnostic criteria met
-- Relevant classification or staging if applicable (e.g., CURB-65, Child-Pugh, GOLD stage)
-
-**Slide 11: Treatment Plan**
-- Non-pharmacologic: diet, activity restrictions, monitoring
-- Pharmacologic: drug name, dose, route, frequency, duration
-- Procedures/interventions if applicable
-- Follow-up plan
-
-**Slide 12: Discussion & Key Takeaways**
-- 3–5 key learning points from this case
-- Relevant epidemiology/pathophysiology pearl
-- Clinical pearl or "teaching point" for each takeaway
+Internally plan a realistic, educational virtual patient case with:
+- Realistic demographics (age, sex)
+- Typical chief complaint for the disease
+- Logical HPI → PE → Labs → Diagnosis → Treatment flow
+- Common risk factors and comorbidities
+- Representative lab values and imaging findings
 
 ---
 
-# PART 2: PRESENTATION SCRIPT (in Korean)
+## STEP 2: Generate the PowerPoint File
 
-Write a natural, academic-style presentation script in Korean for each slide. The script should sound like a confident medical student presenting to an attending physician or professor.
+Write and execute a Python script that creates a `.pptx` file with **12 slides** using `python-pptx`.
+
+**File output path:** `/home/user/endo/case_$ARGUMENTS.pptx`
+(Replace spaces in $ARGUMENTS with underscores)
+
+### Slide Design Requirements:
+- Use a clean, professional medical presentation style
+- Background: white or very light gray (RGB 245, 245, 245)
+- Title text: dark navy (RGB 31, 73, 125) — bold, 28–32pt
+- Body text: dark gray (RGB 50, 50, 50) — 16–20pt
+- Accent color for important values: red (RGB 192, 0, 0)
+- Slide size: widescreen 16:9 (13.33 × 7.5 inches)
+- Each slide must have: a colored title bar at top, content area below
+
+### 12 Required Slides:
+
+1. **Title Slide** — Case title, department, "Medical Student Case Presentation", date
+2. **Patient Information** — Age, sex, CC, date of admission
+3. **History of Present Illness** — OLDCARTS table or timeline bullets
+4. **PMH / FH / SH** — Three columns or sections
+5. **Review of Systems** — Table: System | Positive | Negative
+6. **Physical Examination** — Vital signs table + systematic exam findings
+7. **Laboratory & Imaging** — Key lab values in table (highlight abnormals in red), imaging findings
+8. **Problem List & Assessment** — Numbered list + assessment paragraph
+9. **Differential Diagnosis** — Table: Diagnosis | For | Against
+10. **Final Diagnosis** — Confirmed diagnosis + criteria met + classification/staging
+11. **Treatment Plan** — Non-pharm / Pharm table + follow-up
+12. **Discussion & Key Takeaways** — 3–5 bullet points with clinical pearls
+
+### Python Script Guidelines:
+- Use `python-pptx` library
+- For each slide: add a filled rectangle as title bar (navy, top strip), add title text, add body content
+- Use `add_textbox` for flexible layout
+- For tables: use `add_table` with proper column widths
+- Bold abnormal lab values; use red font for critical values
+- Keep bullet points concise — keywords and numbers only, not full sentences
+- All slide content in **English**
+
+After writing the script, execute it with the Bash tool and confirm the file was created.
+
+---
+
+## STEP 3: Output the Korean Presentation Script
+
+After the file is created, output a Korean-language presentation script for each slide.
 
 Format:
-
 ### [Slide N] 대본
-[Korean script for presenting this slide]
+[3–6 sentences in formal Korean (합쇼체)]
 
 Guidelines:
-- Start with a formal greeting and case introduction on Slide 1
-- Use polite formal Korean (합쇼체)
-- Connect slides with natural transitions ("다음 슬라이드를 보시면...", "이를 바탕으로...")
-- Explain clinical reasoning, not just read the slide
-- Highlight why certain findings are significant
-- Script for each slide: approximately 3–6 sentences
+- Natural transitions between slides
+- Explain clinical reasoning (not just reading the slide)
+- Highlight significance of key findings
 
 ---
 
-# PART 3: EXPECTED Q&A (in Korean)
+## STEP 4: Output Expected Q&A
 
-List 5 questions an attending physician might ask, with model answers.
-
-Format:
+List 5 attending-physician questions with model answers in Korean.
 
 **Q[N]: [Question]**
-A: [Model answer — concise, clinically sound]
-
-Focus on:
-- Diagnostic reasoning ("왜 이 진단을 내렸나요?")
-- Pathophysiology ("이 약의 작용 기전은?")
-- Management decisions ("왜 이 치료를 선택했나요?")
-- Differential considerations ("다른 진단은 왜 배제했나요?")
-- Prognosis/follow-up
+A: [Concise, clinically accurate answer]
 
 ---
 
-Make the case realistic, educational, and representative of a typical presentation seen in Korean teaching hospitals. Ensure the clinical reasoning flows logically from history → exam → labs → diagnosis → treatment.
+Make the case representative of a typical teaching hospital presentation in Korea. Ensure clinical logic flows: history → exam → labs → diagnosis → treatment.
