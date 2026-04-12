@@ -1,10 +1,10 @@
-You are assisting a Korean medical student (intern) who needs to prepare a virtual patient case presentation using **Canva**.
+You are assisting a Korean medical student (intern) who needs to prepare a virtual patient case presentation.
 
 The department or disease to present is: **$ARGUMENTS**
 
 Your job is to:
 1. Design a realistic virtual patient case for **$ARGUMENTS**
-2. Create a Canva presentation using the Canva MCP tools
+2. Write a Python script using `python-pptx` to generate a `.pptx` file, then execute it
 3. Output the Korean presentation script as text
 4. Output expected Q&A
 
@@ -13,7 +13,7 @@ Your job is to:
 ## STEP 1: Design the Case
 
 Internally plan a realistic, educational virtual patient case with:
-- Realistic demographics (age, sex)
+- Realistic demographics (age, sex, Korean name)
 - Typical chief complaint for the disease
 - Logical HPI → PE → Labs → Diagnosis → Treatment flow
 - Common risk factors and comorbidities
@@ -21,93 +21,76 @@ Internally plan a realistic, educational virtual patient case with:
 
 ---
 
-## STEP 2: Create the Canva Presentation
+## STEP 2: Generate the PowerPoint File
 
-### 2-A. Request Outline Review (MANDATORY FIRST STEP)
+Write a complete Python script and execute it with the Bash tool.
 
-Call the `request-outline-review` MCP tool with the following parameters:
+**File output path:** `/home/user/endo/case_$ARGUMENTS.pptx`
+(Replace spaces in $ARGUMENTS with underscores)
 
-- **topic:** `"Virtual Patient Case: $ARGUMENTS — Medical Student Presentation"`
-- **audience:** `"educational"`
-- **style:** `"elegant"`
-- **length:** `"comprehensive"`
-- **pages:** an array of exactly 12 slide objects
+First check/install python-pptx:
+```bash
+python3 -c "from pptx import Presentation" 2>/dev/null || pip install python-pptx -q
+```
 
-The 12 slides must be:
+### Design Style (Canva-inspired, elegant medical):
+- Slide size: 13.33 × 7.5 inches (16:9)
+- Background: light gray RGB(245,245,245)
+- Title bar: full-width navy rectangle RGB(31,73,125) at top, height ~1.1 in
+- Title text: white, bold, 28–30pt, inside the title bar
+- Body text: dark gray RGB(50,50,50), 14–16pt
+- Abnormal lab values: red RGB(192,0,0), bold
+- Tables: navy header row (white bold text), alternating row colors
 
-1. **Title Slide**
-   - Title: `"[Disease/Dept] — Virtual Patient Case"`
-   - Description: Patient case overview with department, presentation type ("Medical Student Case Presentation"), and today's date. Introduce the case with a one-sentence clinical hook.
+### Helper functions to define once and reuse:
+```python
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN
 
-2. **Patient Information**
-   - Title: `"Patient Overview"`
-   - Description: Age, sex, chief complaint, date/mode of admission. Include occupation and relevant social context.
+NAVY  = RGBColor(31,73,125)
+WHITE = RGBColor(255,255,255)
+DARK  = RGBColor(50,50,50)
+RED   = RGBColor(192,0,0)
+LGRAY = RGBColor(245,245,245)
 
-3. **History of Present Illness**
-   - Title: `"History of Present Illness"`
-   - Description: Chronological narrative using OLDCARTS framework: Onset, Location, Duration, Character, Aggravating/Alleviating factors, Radiation, Timing, Severity. Include relevant associated symptoms.
+def add_slide(prs): return prs.slides.add_slide(prs.slide_layouts[6])
+def bg(slide, prs, color=LGRAY): ...   # full-slide background rectangle
+def title_bar(slide, prs, text): ...   # navy bar + white title text
+def body_box(slide, text, left, top, width, height, size=15, bold=False, color=DARK): ...
+def add_table(slide, headers, rows, left, top, width, height, col_widths=None): ...
+```
 
-4. **Past Medical / Family / Social History**
-   - Title: `"PMH / FH / SH"`
-   - Description: Past medical and surgical history, current medications, allergies. Family history of related conditions. Social history: smoking, alcohol, occupation, exercise.
+### 12 Required Slides:
 
-5. **Review of Systems**
-   - Title: `"Review of Systems"`
-   - Description: Systematic review organized by organ system. Clearly list pertinent positives and pertinent negatives for each system relevant to the case.
+1. **Title Slide** — Large navy band in center; disease name 40–44pt white bold; subtitle "Virtual Patient Case"; department + date; patient one-liner
+2. **Patient Overview** — 2-column table: Item | Detail (name, age/sex, occupation, CC, admission date, referral reason)
+3. **History of Present Illness** — OLDCARTS table: column 1 = framework item, column 2 = patient findings; include associated symptoms row
+4. **PMH / FH / SH** — Three side-by-side columns with navy header bars: Past Medical Hx | Family Hx | Social Hx
+5. **Review of Systems** — 3-column table: System | Pertinent Positives | Pertinent Negatives (7–8 systems)
+6. **Physical Examination** — Top half: 4-column vitals table (Parameter|Value|Parameter|Value); Bottom half: System|Findings table
+7. **Labs & Imaging** — Table: Test | Result | Reference | Interpretation; red+bold for abnormals; imaging summary below
+8. **Problem List & Assessment** — Numbered problem table (#|Problem|Details) + shaded assessment paragraph box
+9. **Differential Diagnosis** — Table: Diagnosis | Evidence FOR | Evidence AGAINST (4 diagnoses; top one marked ★)
+10. **Final Diagnosis** — Central navy diagnosis banner; criteria table (#|Criterion|Patient Findings); severity classification row
+11. **Treatment Plan** — Table: Category | Details (Non-Pharm, Drug 1, Drug 2, Definitive option 1, Definitive option 2, Follow-Up)
+12. **Discussion & Key Takeaways** — Table: Pearl # | Clinical Pearl (5 pearls); navy summary banner at bottom
 
-6. **Physical Examination**
-   - Title: `"Physical Examination"`
-   - Description: Vital signs (BP, HR, RR, Temp, SpO2, BMI). Systematic examination findings from head to toe. Highlight pertinent positives with clinical significance.
+### Script rules:
+- All content in **English**
+- Write the entire script as one block; execute with Bash tool
+- Bold + red font for any value containing ↑ ↓ HIGH LOW CRIT or known abnormal patterns
+- Delete the script file after successful execution
+- Print confirmation: `Saved: /home/user/endo/case_$ARGUMENTS.pptx`
 
-7. **Laboratory & Imaging Findings**
-   - Title: `"Labs & Imaging"`
-   - Description: Key laboratory values including CBC, BMP, and disease-specific markers. Clearly flag abnormal values. Imaging findings with interpretation (CXR, CT, US, or relevant modality).
-
-8. **Problem List & Assessment**
-   - Title: `"Problem List & Assessment"`
-   - Description: Numbered active problem list. Clinical assessment paragraph synthesizing history, exam, and labs to explain why this presentation fits the working diagnosis.
-
-9. **Differential Diagnosis**
-   - Title: `"Differential Diagnosis"`
-   - Description: Top 3–4 differential diagnoses. For each: supporting evidence from the case, and evidence against. Explain clinical reasoning for prioritization.
-
-10. **Final Diagnosis**
-    - Title: `"Final Diagnosis"`
-    - Description: Confirmed diagnosis with full name. Diagnostic criteria met in this patient. Classification or staging if applicable (e.g., AHA/ACC staging, TNM, GOLD, etc.).
-
-11. **Treatment Plan**
-    - Title: `"Treatment Plan"`
-    - Description: Non-pharmacological measures. Pharmacological treatment with drug names, doses, and rationale. Follow-up plan and monitoring parameters.
-
-12. **Discussion & Key Takeaways**
-    - Title: `"Discussion & Key Takeaways"`
-    - Description: 3–5 clinical pearls specific to this case. Teaching points about pathophysiology, diagnostic approach, or management. One memorable summary sentence.
-
-Wait for the user to review and approve the outline in the Canva widget before proceeding.
-
----
-
-### 2-B. Generate the Design (ONLY after outline is approved)
-
-After the user approves the outline, call `generate-design-structured` with:
-- The exact same `topic`, `audience`, `style`, `length`, and `presentation_outlines` from the approved outline
-- `design_type`: `"presentation"`
-
-Then call `create-design-from-candidate` with the `job_id` and `candidate_id` from the generation result to convert it into an editable Canva design.
-
-Present the resulting Canva design URL to the user so they can open and edit it directly.
-
----
-
-### 2-C. Optional Export
-
-Offer to export the design as PPTX using the `export-design` MCP tool with `format.type: "pptx"`, so the user has a local file as well.
+After execution confirm the file exists with `ls -lh`.
 
 ---
 
 ## STEP 3: Output the Korean Presentation Script
 
-After the design is created, output a Korean-language presentation script for each slide.
+After the file is created, output a Korean-language script for each slide.
 
 Format:
 ### [Slide N] 대본
@@ -115,9 +98,9 @@ Format:
 
 Guidelines:
 - Natural transitions between slides
-- Explain clinical reasoning (not just reading the slide)
+- Explain clinical reasoning, not just reading slides
 - Highlight significance of key findings
-- Use appropriate medical Korean terminology
+- Use proper medical Korean terminology
 
 ---
 
@@ -130,4 +113,6 @@ A: [Concise, clinically accurate answer in formal Korean]
 
 ---
 
-Make the case representative of a typical teaching hospital presentation in Korea. Ensure clinical logic flows: history → exam → labs → diagnosis → treatment.
+> **Canva import tip:** The generated `.pptx` can be imported directly into Canva via canva.com → Create a design → Import file. Canva will convert all slides automatically.
+
+Make the case representative of a typical Korean teaching hospital presentation. Ensure clinical logic flows: history → exam → labs → diagnosis → treatment.
