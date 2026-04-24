@@ -20,7 +20,7 @@ from pptx import Presentation
 # Constants
 # ---------------------------------------------------------------------------
 
-BASE_DIR = "/home/user/endo"
+BASE_DIR = "/home/user/endo2"
 TIMETABLE_FILE = os.path.join(BASE_DIR, "2023학년도 1학년 2학기 시간표(안)_231005_공지용.xlsx")
 JUNGRI_PDF = os.path.join(BASE_DIR, "[정리족]내분비학 1차 정리족(2).pdf")
 CHUL_PDF = os.path.join(BASE_DIR, "[출족]내분비학 1차 출족(2).pdf")
